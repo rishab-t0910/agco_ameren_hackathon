@@ -1,15 +1,23 @@
-# University of Illinois Research Park Hackathon 2024
-Welcome to our project!
+# Occupi - University of Illinois Research Park Hackathon 2024
 
-Team Name: Agco x Ameren
+Occupi - near real-time and forecasted room occupancy using edge computing and zero-shot transfer learning.
+
+## Team Name: Agco x Ameren
+
 Members: Samuel Gerstein, Caleb Larson, Angie Lewis, Atharva Naik, Rishab Tirupathi
 
-Project Name: 
+## Problem
 
-Problem: 
+## Proposed Solution
 
-Proposed Solution:
+## Future Work
 
-Future Work:
+## File Architecture
 
-File Architecture: 
+## Repository setup
+
+We recommend creating a [python virtual environment](https://docs.python.org/3/tutorial/venv.html) to silo dependencies for the project.
+
+```
+pip install -r requirements.txt
+```
