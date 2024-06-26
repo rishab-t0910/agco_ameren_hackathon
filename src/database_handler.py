@@ -24,5 +24,8 @@ class DatabaseHandler:
     def add_data(self, data):
         self.db.collection(self.collection_name).add(data)
 
+    def get_data(self, node_id, data):
+        return None
+
 
 
