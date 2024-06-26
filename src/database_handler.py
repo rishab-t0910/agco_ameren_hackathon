@@ -51,5 +51,17 @@ class DatabaseHandler:
             data.append(doc_dict)
 
         return data
+    
+    def get_most_recent_count(self, node_id):
+        collection_ref = self.db.collection(node_id)
+
+        query = collection_ref.order_by('timestamp', direction=firestore.Query.DESCENDING).limit(1)
+        docs = query.stream()
+
+        for doc in docs:
+            doc_dict = doc.to_dict()
+            return doc_dict.get('count')  # Return the count value from the most recent document
+
+        return None 
 
 

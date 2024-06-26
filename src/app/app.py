@@ -10,7 +10,7 @@ CORS(app)
 db = DatabaseHandler()
 
 @app.route('/add', methods=['POST'])
-def add_entry():
+def add_data():
     """
     Add a document (single observation) to the dataset. This request should have
     a JSON payload as follows:
@@ -26,10 +26,10 @@ def add_entry():
     count = data.get('count')
 
     if node_id is None:
-        return "Missing data", 400
+        return jsonify({'error': 'Missing data'}), 400
 
     db.add_data(node_id, timestamp, noise, count)
-    return "Success", 200
+    return jsonify({'message': 'Success'}), 400
 
 @app.route('/data', methods=['GET'])
 def get_data():
@@ -45,7 +45,7 @@ def get_data():
     end = request.args.get('end')
 
     if node_id is None:
-        return "Missing data", 400
+        return jsonify({'error': 'Missing data'}), 400
     
     try:
         start_timestamp = datetime.datetime.strptime('%Y-%m-%dT%H:%M:%S') if start else None
@@ -64,13 +64,27 @@ def get_data():
         return jsonify({'error' : str(e)}), 400
 
 @app.route('/count', methods=['GET'])
-def get_count():
+def get_most_recent_count():
     """
     Get current (real-time) counts of data. This route should have parameters
     like follows: "/count?node_id=<x>" where
     node_id: node id
     """
-    return None
+    node_id = request.args.get('node_id')
+
+    if node_id is None:
+        return jsonify({'error': 'Missing data'}), 400
+    
+    try:
+        # Query Firestore for the most recent document
+        count = db.get_most_recent_count(node_id)
+        if count is not None:
+            return jsonify({'node_id': node_id, 'count': count}), 200
+        else:
+            return jsonify({'error': 'No data found for node_id'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 
 @app.route('/forecast', methods=['GET'])
 def get_forecast():
