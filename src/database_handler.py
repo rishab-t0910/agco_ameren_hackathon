@@ -1,6 +1,7 @@
 from google.cloud import firestore
 from dotenv import load_dotenv
 import os
+import datetime
 
 class DatabaseHandler:
 
@@ -8,6 +9,7 @@ class DatabaseHandler:
         # Load environment
         load_dotenv()
         credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+
         # Check if the credentials environment variable is set
         if credentials_path:
             os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
@@ -16,16 +18,38 @@ class DatabaseHandler:
 
         # Initialize firestore
         self.db = firestore.Client()
-        self.collection_name = 'streaming_data'
 
-    def verify_schema(data):
-        return False
+    def add_data(self, node_id, timestamp, noise, count):
+        data = {
+            'timestamp' : timestamp,
+            'node_id' : node_id,
+            'noise' : noise,
+            'count' : count,
+        }
 
-    def add_data(self, data):
-        self.db.collection(self.collection_name).add(data)
+        doc_id = timestamp.strftime('%Y-%m-%dT%H:%M:%S')
+        self.db.collection(node_id).document(doc_id).set(data)
 
-    def get_data(self, node_id, data):
-        return None
+    def get_data(self, node_id, start, end):
+        collection_ref = self.db.collection(node_id)
+        query = collection_ref
 
+        if start and end:
+            query = query.where('timestamp', '>=', start).where('timestamp', '<=', end)
+        elif start:
+            query = query.where('timestamp', '>=', start)
+        elif end:
+            query = query.where('timestamp', '<=', end)
+
+        docs = query.stream()
+
+        # Collect the documents in a list
+        data = []
+        for doc in docs:
+            doc_dict = doc.to_dict()
+            doc_dict['id'] = doc.id  # Add the document ID to the data
+            data.append(doc_dict)
+
+        return data
 
 
