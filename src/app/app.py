@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
-import os
 from database_handler import DatabaseHandler
 
 app = Flask(__name__)
@@ -15,7 +14,7 @@ def add_entry():
     Add a document (single observation) to the dataset. This request should have
     a JSON payload as follows:
     node_id
-    sensor data
+    sensor data (sound or light)
     count
     """
     return None
@@ -50,3 +49,6 @@ def get_forecast():
     time: timestamp to get forecast (prev 6 and next 6 hours)
     """
     return None
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)

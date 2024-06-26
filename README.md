@@ -20,6 +20,10 @@ The solution is to combine sensors and predictive modeling to showcase what the 
 
 We hope to also implement a recommendation system that provides recommendations for nearby libraries with sufficient capacity.
 
+## System Architecture
+
+![UML](/assets/uml.png)
+
 ## Repository setup
 
 We recommend creating a [python virtual environment](https://docs.python.org/3/tutorial/venv.html) to silo dependencies for the project.
