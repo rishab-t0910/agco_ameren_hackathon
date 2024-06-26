@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 from database_handler import DatabaseHandler
+import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -9,15 +10,26 @@ CORS(app)
 db = DatabaseHandler()
 
 @app.route('/add', methods=['POST'])
-def add_entry():
+def add_data():
     """
     Add a document (single observation) to the dataset. This request should have
     a JSON payload as follows:
-    node_id
-    sensor data (sound or light)
-    count
+    node_id: rpi uuid
+    timestamp: rpi timestamp at read time
+    noise: noise levels
+    count: edge computed occupancy count
     """
-    return None
+    data = request.get_json()
+    node_id = data.get('node_id')
+    timestamp = data.get('timestamp')
+    noise = data.get('noise')
+    count = data.get('count')
+
+    if node_id is None:
+        return jsonify({'error': 'Missing data'}), 400
+
+    db.add_data(node_id, timestamp, noise, count)
+    return jsonify({'message': 'Success'}), 400
 
 @app.route('/data', methods=['GET'])
 def get_data():
@@ -28,16 +40,51 @@ def get_data():
     start: start timestamp
     end: end timestamp
     """
-    return None
+    node_id = request.args.get('node_id')
+    start = request.args.get('start')
+    end = request.args.get('end')
+
+    if node_id is None:
+        return jsonify({'error': 'Missing data'}), 400
+    
+    try:
+        start_timestamp = datetime.datetime.strptime('%Y-%m-%dT%H:%M:%S') if start else None
+        end_timestamp = datetime.datetime.strptime('%Y-%m-%dT%H:%M:%S') if end else None
+    except ValueError:
+        return jsonify({'error': 'Invalid datetime format. Use YYYY-MM-DDTHH:MM:SS'}), 400
+
+
+    if start_timestamp and end_timestamp and start_timestamp >= end_timestamp:
+        return jsonify({'error': 'Start time must be before end time'}), 400
+    
+    try:
+        data = db.get_data(node_id, start_timestamp, end_timestamp)
+        return jsonify ({'data' : data}), 200
+    except Exception as e:
+        return jsonify({'error' : str(e)}), 400
 
 @app.route('/count', methods=['GET'])
-def get_count():
+def get_most_recent_count():
     """
     Get current (real-time) counts of data. This route should have parameters
     like follows: "/count?node_id=<x>" where
     node_id: node id
     """
-    return None
+    node_id = request.args.get('node_id')
+
+    if node_id is None:
+        return jsonify({'error': 'Missing data'}), 400
+    
+    try:
+        # Query Firestore for the most recent document
+        count = db.get_most_recent_count(node_id)
+        if count is not None:
+            return jsonify({'node_id': node_id, 'count': count}), 200
+        else:
+            return jsonify({'error': 'No data found for node_id'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 
 @app.route('/forecast', methods=['GET'])
 def get_forecast():
