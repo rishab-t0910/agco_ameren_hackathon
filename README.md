@@ -26,7 +26,7 @@ put final link here
 
 ### figma final design link
 https://www.figma.com/design/jqPVaCqANmeKBIrWMTB5vH/agco-ameren-hackathon?node-id=0-1&t=5QMZqTV9jB70VagN-1
-### figma desktop prototype 
+### figma desktop mockup
 https://www.figma.com/proto/jqPVaCqANmeKBIrWMTB5vH/agco-ameren-hackathon?page-id=0%3A1&node-id=18-212&viewport=1876%2C-3487%2C0.47&t=DtgSPgIxJfiP2O6o-1&scaling=scale-down&content-scaling=fixed
 
 ## System Architecture
