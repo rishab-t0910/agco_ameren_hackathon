@@ -26,16 +26,6 @@ We then host the model so that it can communicate with the Raspberry Pi through 
 
  We hope to also implement a recommendation system that provides recommendations for nearby UIUC buildings (like the ARC, Grange Grove, etc) with sufficient capacity. 
 
-### website link
-
- final link here  
- ### Process 
-Angie 
-Caleb 
-Atharva 
-Sam 
-Rishab
-
 ## System Architecture
 
 ![UML](/assets/uml.png)
