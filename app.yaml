@@ -1,0 +1,17 @@
+runtime: python39
+
+entrypoint: gunicorn -b :$PORT src.main:app
+
+env_variables:
+    GOOGLE_APPLICATION_CREDENTIALS: "google-cloud-key.json"
+
+handlers:
+    - url: /static
+      static_dir: website
+
+    - url: /
+      static_files: website/index.html
+      upload: website/index.html
+
+    - url: /.*
+      script: auto

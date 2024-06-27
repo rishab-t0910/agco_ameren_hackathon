@@ -1,10 +1,11 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
-from database_handler import DatabaseHandler
+from .database_handler import DatabaseHandler
+from .graph_generation import generate_graph
 import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../website')
 CORS(app)
 
 db = DatabaseHandler()
@@ -12,6 +13,11 @@ db = DatabaseHandler()
 def parse_timestamp(timestamp):
     return datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
 
+@app.route('/')
+def index():
+    # Generate the image before serving the index.html
+    generate_graph(node_id=1)
+    return send_from_directory('../website', 'index.html')
 
 @app.route('/add', methods=['POST'])
 def add_data():
@@ -119,7 +125,7 @@ def forecast():
             return jsonify({'error': 'Invalid datetime format. Use YYYY-MM-DDTHH:MM:SS'}), 400
 
         try:
-            data = db.get_forecast(time)
+            data = db.get_forecast(node_id, time)
             return jsonify({'data' : data}), 200
         except Exception as e:
             return jsonify({'error' : str(e)}), 500
