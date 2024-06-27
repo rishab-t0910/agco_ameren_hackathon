@@ -11,17 +11,15 @@ url = os.getenv('API_URL')
 
 def get_data(start=None, end=None):
     if not start and not end:
-        response = requests.get(url + "/data")
+        response = requests.get(url + "/data").json()
     elif not start:
-        response = requests.get(url + f"/data?node_id=1&start={start}")
+        response = requests.get(url + f"/data?node_id=1&start={start}").json()
     elif not end:
-        response = requests.get(url + f"/data?node_id=1&end={end}")
+        response = requests.get(url + f"/data?node_id=1&end={end}").json()
     else:
-        response = requests.get(url + f"/data?node_id=1&start={start}&end={end}")
+        response = requests.get(url + f"/data?node_id=1&start={start}&end={end}").json()
 
-    json_file = response.json()
-    pd_df = pd.DataFrame(json_file)
-
+    pd_df = pd.json_normalize(response, "data")
     return pd_df
 
 def write_forecast(df, node_id = 1):
