@@ -99,7 +99,25 @@ processed_data = data_raw.copy()
 processed_data['Month'] = pd.to_datetime(processed_data['timestamp']).dt.month
 processed_data['Year'] = pd.to_datetime(processed_data['timestamp']).dt.year
 processed_data = processed_data[['Month', 'Year']].drop_duplicates()
+new_data = pd.DataFrame({'Month': [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5], 'Year': [2024, 2024, 2024, 2024, 2024, 2024, 2025, 2025, 2025, 2025, 2025, ]})
+
+processed_data = pd.concat([processed_data, new_data], axis = 0).reset_index(drop = True)
 
 ## Predict model to our data
-forecast_df = pd.DataFrame(model.predict(processed_data)).rename(columns = {0:"Forecast"})
-write_forecast(forecast_df)
+preds = list(model.predict(processed_data).flatten())
+forecast_df = pd.DataFrame(preds).rename(columns = {0:"Forecast"})
+start_time = datetime(2024, 6, 26, 20, 0, 0) 
+end_time = datetime(2024, 6, 26, 23, 0, 0)  
+
+# Generate timestamps in 15-minute intervals
+timestamps = []
+current_time = start_time
+while current_time < end_time:
+    timestamps.append(current_time)
+    current_time += timedelta(minutes=15)
+
+forecast_df['node_id'] = 1
+forecast_df['Timestamp'] = timestamps
+
+write_forecast(forecast_df, node_id = 1)
+forecast_df

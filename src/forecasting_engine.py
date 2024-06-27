@@ -24,4 +24,7 @@ def get_data(start=None, end=None):
 
 def write_forecast(df, node_id = 1):
     json_str = df.to_json(orient='records')
+    print(url)
+    print(json_str)
+
     response = requests.post(url + "/forecast?node_id=" + str(node_id), json=json_str)
