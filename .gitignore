@@ -1,3 +1,5 @@
 venv
 .env
 google-cloud-key.json
+src/__pycache__/__init__.cpython-311.pyc
+src/__pycache__/forecasting_engine.cpython-311.pyc
