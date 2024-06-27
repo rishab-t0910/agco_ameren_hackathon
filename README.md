@@ -14,7 +14,7 @@ We often see people in libraries at UofI counting the number of people in the li
 
 ### Proposed Solution
 
-The solution is to combine sensors and predictive modeling to showcase what the current seating capacity is, and what the future is likely to be. This enables students to better plan when to reach the library, and whether or not it is worth their time.
+The solution is to combine sensors and predictive modeling to showcase what the current capacity is, and what the future is likely to be. This enables students to better plan when to reach the library, and whether or not it is worth their time.
 
 ### Future Work
 
