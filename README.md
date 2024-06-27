@@ -18,11 +18,11 @@ The solution is to combine sensors and predictive modeling to showcase what the 
 
 ### Future Work
 
-We hope to also implement a recommendation system that provides recommendations for nearby libraries with sufficient capacity.
+ We hope to also implement a recommendation system that provides recommendations for nearby UIUC buildings (like the ARC) with sufficient capacity. 
 
 ### website link
 
-put link here 
+put final link here 
 
 ### figma final design link
 https://www.figma.com/design/jqPVaCqANmeKBIrWMTB5vH/agco-ameren-hackathon?node-id=0-1&t=5QMZqTV9jB70VagN-1
