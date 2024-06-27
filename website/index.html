@@ -1,108 +1,117 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
-    
-    <head>
-     
-            <title>occuPI</title>
-            <meta charset="utf-8">
-            <!-- this is my first time coding since 2023 lol // and for a hackathon this is angie // () -->
-    <style>
-        
-      /* div applies to everything// ideally the figma would be implemented this code is just for proof of concept */
-        div{
-            /* border: thin; */
-            border-color: black;
-            border-width: thin;
-            border-style: solid;
-            margin: 10px;
-            padding: 10px;
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-        }
-        /* is the big container for everything made it white so u cant see the border */
-        .wrapper{
-            display: grid;
-            border-color: rgb(255, 255, 255);
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-            grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr ;
-            height: 90vh;
-        }
+	<head>
+		<title>occuPI</title>
+		<meta charset="utf-8" />
+		<!-- this is my first time coding since 2023 lol // and for a hackathon this is angie // () -->
+		<style>
+			/* div applies to everything// ideally the figma would be implemented this code is just for proof of concept */
+			div {
+				/* border: thin; */
+				border-color: black;
+				border-width: thin;
+				border-style: solid;
+				margin: 10px;
+				padding: 10px;
+				font-family: "Franklin Gothic Medium", "Arial Narrow", Arial,
+					sans-serif;
+			}
+			/* is the big container for everything made it white so u cant see the border */
+			.wrapper {
+				display: grid;
+				border-color: rgb(255, 255, 255);
+				grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+				grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+				height: 90vh;
+			}
 
-        /* cards css */
-      
-        .one{
-            grid-column: 1/3;
-            grid-row: 1/2;
-            border-radius: 1rem;
-            
-        }
-        .two{
-            grid-column: 3/5;
-            grid-row: 1/2;
-            border-radius: 1rem;
-        }
-        .three{
-            grid-column: 5/7;
-            grid-row: 1/2;
-            border-radius: 1rem;
-        }
+			/* cards css */
 
-        .seven {  grid-column: 7/9;
-            grid-row: 1/2;
-            border-radius: 1rem;
+			.one {
+				grid-column: 1/3;
+				grid-row: 1/2;
+				border-radius: 1rem;
+			}
+			.two {
+				grid-column: 3/5;
+				grid-row: 1/2;
+				border-radius: 1rem;
+			}
+			.three {
+				grid-column: 5/7;
+				grid-row: 1/2;
+				border-radius: 1rem;
+			}
 
-        }
+			.seven {
+				grid-column: 7/9;
+				grid-row: 1/2;
+				border-radius: 1rem;
+			}
 
+			.six {
+				grid-column: 1/9;
+				grid-row: 2/7;
+				border-radius: 1rem;
+				/* background-image: "static/plot.jpg";
+				background-size: contain;
+				background-repeat: no-repeat;
+				background-position: center; */
+			}
+		</style>
+	</head>
 
-       
-      
-        .six{
-            grid-column: 1/9;
-            grid-row: 2/7;
-            border-radius: 1rem;
-            background-image: url(plot.png);
-            background-size:contain;
-            background-repeat: no-repeat;
-            background-position: center;
-          
-        } 
+	<body>
+		<div class="wrapper">
+			<!-- top 4 cards -->
+			<div class="one">
+				LOCATION <br /><br />
+				<h1>Grainger Library</h1>
+			</div>
+			<div class="two">
+				OCCUPANCY PERCENT <br /><br />
+				<h1 id="occupancy-percent">Loading...</h1>
+			</div>
+			<div class="three">
+				CURRENT OCCUPANCY <br /><br />
+				<h1 id="current-occupancy">Loading...</h1>
+			</div>
+			<div class="seven">
+				MAX OCCUPANCY <br /><br />
+				<h1 id="max-occupancy">Loading...</h1>
+			</div>
 
-  
-    </style>
-    </head>
-    
-    <body>
-    
- 
+			<!-- bottom graph card -->
 
-        <div class="wrapper">
+			<div class="six">
+				<img id="/static/plot.jpg" alt="Generated Plot" />
+			</div>
+		</div>
 
-            <!-- top 4 cards -->
-            <div class="one">LOCATION
-            <br><br>
-            <h1> Grainger Library </h1>
-            </div>
-            <div class="two">OCCUPANCY PERCENT
-            <br><br>
-            <h1> 95% </h1>
-            </div>
-            <div class="three"> CURRENT OCCUPANCY
-                <br><br>
-                <h1> 380 </h1>
-            </div>
-<div class="seven"> MAX OCCUPANCY <br><br>
-    <h1> 400 </h1>
-    
-</div>
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				fetch("/count?node_id=1") // Replace 'your_node_id' with the actual node ID
+					.then((response) => response.json())
+					.then((data) => {
+						const maxOccupancy = 400; // Assuming max occupancy is 400
+						const currentOccupancy = data.count;
+						const occupancyPercent =
+							(currentOccupancy / maxOccupancy) * 100;
 
-            
-   <!-- bottom graph card -->
-        
-            <div class="six">OCCUPANCY FORECAST | # of People by Time | 2:02 PM | Wednesday, June 26, 2024 
-        
-            </div>
-
-        </div>
-    </body>
+						document.getElementById(
+							"occupancy-percent"
+						).textContent = `${occupancyPercent.toFixed(2)}%`;
+						document.getElementById(
+							"current-occupancy"
+						).textContent = currentOccupancy;
+						document.getElementById("max-occupancy").textContent =
+							maxOccupancy;
+					})
+					.catch((error) => {
+						console.error("Error fetching occupancy data:", error);
+					});
+			});
+		</script>
+	</body>
 </html>

@@ -5,6 +5,9 @@
 import matplotlib.pyplot as plt
 import requests
 import pandas as pd
+from io import BytesIO
+import matplotlib.pyplot as plt
+
 #import jsonify
 node_id = 1
 url = "http://occupi-rp-hack-24.uc.r.appspot.com"
@@ -14,9 +17,15 @@ def generate_graph(node_id=1):
     response_df = pd.json_normalize(response, "data")
     print(response_df)
     last_row = response_df.iloc[-1]["timestamp"]
+    plt.figure(figsize=(18,6))
     plt.plot(response_df["timestamp"], response_df["count"]) 
     plt.xlabel("Time")
     plt.ylabel("Occupancy")
     plt.xticks(last_row)
-    plt.show()
-    plt.savefig('../website/plot.png')
+    
+    img_io = BytesIO()
+    plt.savefig(img_io, format='png')
+    img_io.seek(0)
+    plt.close()
+
+    return img_io

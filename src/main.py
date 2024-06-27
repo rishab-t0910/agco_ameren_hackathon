@@ -1,9 +1,13 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_cors import CORS
 from dotenv import load_dotenv
 from .database_handler import DatabaseHandler
 from .graph_generation import generate_graph
 import datetime
+from io import BytesIO
+import matplotlib.pyplot as plt
+import requests
+import pandas as pd
 
 app = Flask(__name__, static_folder='../website')
 CORS(app)
@@ -15,9 +19,28 @@ def parse_timestamp(timestamp):
 
 @app.route('/')
 def index():
-    # Generate the image before serving the index.html
-    generate_graph(node_id=1)
     return send_from_directory('../website', 'index.html')
+
+@app.route('/graph', methods=['GET'])
+def generate_graph():
+    node_id = request.args.get('node_id')
+    
+    response = get_data.json()
+    response_df = pd.json_normalize(response, "data")
+    print(response_df)
+    last_row = response_df.iloc[-1]["timestamp"]
+    plt.figure(figsize=(18,6))
+    plt.plot(response_df["timestamp"], response_df["count"]) 
+    plt.xlabel("Time")
+    plt.ylabel("Occupancy")
+    plt.xticks(last_row)
+    
+    img_io = BytesIO()
+    plt.savefig(img_io, format='png')
+    img_io.seek(0)
+    plt.close()
+
+    return send_file(img_io, mimetype='image/png')
 
 @app.route('/add', methods=['POST'])
 def add_data():
@@ -129,18 +152,13 @@ def forecast():
             return jsonify({'data' : data}), 200
         except Exception as e:
             return jsonify({'error' : str(e)}), 500
-        
+    
+
     elif request.method == 'POST':
         data = request.get_json()
-        node_id = data.get('node_id')
-        forecasts = data.get('forecasts')
-
-        if not node_id or not forecasts:
-            return jsonify({'error': 'Missing node_id or forecasts data'}), 400
-
         try:
             # Rewrite the forecast collection with updated forecast data
-            db.set_forecast(node_id, forecast)
+            db.set_forecast(1, data)
             return jsonify({'message': 'Forecast data updated successfully'}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
