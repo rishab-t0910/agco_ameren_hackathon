@@ -120,4 +120,3 @@ forecast_df['node_id'] = 1
 forecast_df['Timestamp'] = timestamps
 
 write_forecast(forecast_df, node_id = 1)
-forecast_df
