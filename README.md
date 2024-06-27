@@ -16,7 +16,7 @@ We often see people in libraries at UofI counting the number of people in the li
 
 The solution is to combine sensors and predictive modeling to showcase what the current capacity of the building is, and what the future is likely to be. This enables students to better plan when to reach the library, and whether or not it is worth their time.
 
-To forecast for occupancy in a room, we are using transfer learning with zero-shot predictions. We train a [TiDE model](https://arxiv.org/abs/2304.08424) on the first home in the UCI Electricity Dataset which collects hourly electric usage. The size of the lookback window/input chunk is 4 days, and the model can predict 24 hours at once. We test for a horizon of 48 hours by generating predictions autoregressively. This results in an MAE of 25.71 kW. 
+To forecast for occupancy in a room, we are using transfer learning with zero-shot predictions. We train a [TiDE model](https://arxiv.org/abs/2304.08424) on the first home in the UCI Electricity Dataset which collects hourly electric usage. The size of the lookback window/input chunk is 4 days, and the model can predict 24 hours at once. We test for a horizon of 48 hours by generating predictions autoregressively. This results in an MAE of 25.71 kW. We also explored simply using Linear Regression on the Air Passengers dataset for transfer learning.
 
 ![Graph forecast vs actual](output.png)
 
