@@ -18,7 +18,7 @@ The solution is to combine sensors and predictive modeling to showcase what the 
 
 ### Future Work
 
- We hope to also implement a recommendation system that provides recommendations for nearby UIUC buildings (like the ARC) with sufficient capacity. 
+ We hope to also implement a recommendation system that provides recommendations for nearby UIUC buildings (like the ARC, Grange Grove, etc) with sufficient capacity. 
 
 ### website link
 
