@@ -4,10 +4,9 @@ import os
 import datetime
 
 class DatabaseHandler:
-
     def __init__(self):
         # Load environment
-        load_dotenv()
+        load_dotenv("../.env")
         credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 
         # Check if the credentials environment variable is set
@@ -17,18 +16,19 @@ class DatabaseHandler:
             raise EnvironmentError("GOOGLE_APPLICATION_CREDENTIALS environment variable not set.")
 
         # Initialize firestore
-        self.db = firestore.Client()
+        database_id = "occupi-streaming"
+        self.db = firestore.Client(database=database_id)
 
     def add_data(self, node_id, timestamp, noise, count):
         data = {
-            'timestamp' : timestamp,
+            'timestamp' : datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S'),
             'node_id' : node_id,
             'noise' : noise,
             'count' : count,
         }
 
-        doc_id = timestamp.strftime('%Y-%m-%dT%H:%M:%S')
-        self.db.collection(node_id).document(doc_id).set(data)
+        doc_id = timestamp
+        self.db.collection(str(node_id)).document(doc_id).set(data)
 
     def get_data(self, node_id, start, end):
         collection_ref = self.db.collection(node_id)
@@ -47,7 +47,6 @@ class DatabaseHandler:
         data = []
         for doc in docs:
             doc_dict = doc.to_dict()
-            doc_dict['id'] = doc.id  # Add the document ID to the data
             data.append(doc_dict)
 
         return data
@@ -63,5 +62,36 @@ class DatabaseHandler:
             return doc_dict.get('count')  # Return the count value from the most recent document
 
         return None 
+    
+    def get_forecast(self, node_id, time, window=6):
+        collection_past = self.db.collection(node_id)
+        collection_forecast = self.db.collection(node_id + "_forecast")
 
+        data = []
+
+        # Get past 
+        start_time = time - datetime.timedelta(hours=window)
+        query = collection_past.where('timestamp', '>=', start_time)
+        for doc in query.stream():
+            data.append(doc.to_dict())
+
+        # Get future
+        end_time = time + datetime.timedelta(hours=window)
+        query = collection_forecast.where('timestamp', '>=', start_time).where('timestamp', '<=', end_time)
+        for doc in query.stream():
+            data.append(doc.to_dict())
+
+        return data
+    
+    def set_forecast(self, node_id, forecasts):
+        collection_ref = self.db.collection(node_id + "_forecast")
+
+        docs = collection_ref.stream()
+        for doc in docs:
+            doc.reference.delete()
+
+        # Add new forecast documents
+        for forecast in forecasts:
+            doc_id = str(forecast.get('timestamp'))
+            self.db.collection(str(node_id)).document(doc_id).set(forecast)
 

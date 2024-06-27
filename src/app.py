@@ -9,6 +9,10 @@ CORS(app)
 
 db = DatabaseHandler()
 
+def parse_timestamp(timestamp):
+    return datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+
+
 @app.route('/add', methods=['POST'])
 def add_data():
     """
@@ -29,7 +33,7 @@ def add_data():
         return jsonify({'error': 'Missing data'}), 400
 
     db.add_data(node_id, timestamp, noise, count)
-    return jsonify({'message': 'Success'}), 400
+    return jsonify({'message': 'Success'}), 200
 
 @app.route('/data', methods=['GET'])
 def get_data():
@@ -48,8 +52,8 @@ def get_data():
         return jsonify({'error': 'Missing data'}), 400
     
     try:
-        start_timestamp = datetime.datetime.strptime('%Y-%m-%dT%H:%M:%S') if start else None
-        end_timestamp = datetime.datetime.strptime('%Y-%m-%dT%H:%M:%S') if end else None
+        start_timestamp = parse_timestamp(start) if start else None
+        end_timestamp = parse_timestamp(end) if end else None
     except ValueError:
         return jsonify({'error': 'Invalid datetime format. Use YYYY-MM-DDTHH:MM:SS'}), 400
 
@@ -61,7 +65,7 @@ def get_data():
         data = db.get_data(node_id, start_timestamp, end_timestamp)
         return jsonify ({'data' : data}), 200
     except Exception as e:
-        return jsonify({'error' : str(e)}), 400
+        return jsonify({'error' : str(e)}), 500
 
 @app.route('/count', methods=['GET'])
 def get_most_recent_count():
@@ -86,16 +90,56 @@ def get_most_recent_count():
         return jsonify({'error': str(e)}), 500
     
 
-@app.route('/forecast', methods=['GET'])
-def get_forecast():
+@app.route('/forecast', methods=['GET', 'POST'])
+def forecast():
     """
+    GET
     Get forecast for a node id. Returns observations for the last 6 hours and
     forecasts for the next 6 hours. This route should have parameters like 
     follows: "/forecast?node_id=<x>&time=<y>" where
     node_id: node id
     time: timestamp to get forecast (prev 6 and next 6 hours)
+
+    POST
+    Post a forecast to the database. Expects a JSON payload as follows:
+    node_id: node id
+    timestamp: future timestamp
+    count: forecasted count
     """
+    if request.method == 'GET':
+        node_id = request.args.get('node_id')
+        timestamp = request.args.get('time')
+
+        if not node_id or not timestamp:
+            return jsonify({'error': 'Missing node_id or timestamp parameter'}), 400
+
+        try:
+            time = parse_timestamp(timestamp)
+        except ValueError:
+            return jsonify({'error': 'Invalid datetime format. Use YYYY-MM-DDTHH:MM:SS'}), 400
+
+        try:
+            data = db.get_forecast(time)
+            return jsonify({'data' : data}), 200
+        except Exception as e:
+            return jsonify({'error' : str(e)}), 500
+        
+    elif request.method == 'POST':
+        data = request.get_json()
+        node_id = data.get('node_id')
+        forecasts = data.get('forecasts')
+
+        if not node_id or not forecasts:
+            return jsonify({'error': 'Missing node_id or forecasts data'}), 400
+
+        try:
+            # Rewrite the forecast collection with updated forecast data
+            db.set_forecast(node_id, forecast)
+            return jsonify({'message': 'Forecast data updated successfully'}), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
     return None
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5050)
