@@ -1,12 +1,16 @@
 
 <!DOCTYPE html>
+
 <html lang="en">
     
     <head>
+     
             <title>occuPI</title>
+            <meta charset="utf-8">
+            <!-- this is my first time coding since 2023 lol // and for a hackathon this is angie // () -->
     <style>
         
-      
+      /* div applies to everything// ideally the figma would be implemented this code is just for proof of concept */
         div{
             /* border: thin; */
             border-color: black;
@@ -16,13 +20,17 @@
             padding: 10px;
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         }
+        /* is the big container for everything made it white so u cant see the border */
         .wrapper{
             display: grid;
             border-color: rgb(255, 255, 255);
             grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-            grid-template-rows: 1fr 1fr 1fr 1fr 1fr ;
+            grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr ;
             height: 90vh;
         }
+
+        /* cards css */
+      
         .one{
             grid-column: 1/3;
             grid-row: 1/2;
@@ -49,7 +57,7 @@
 
         .four{
             grid-column: 1/2;
-            grid-row: 2/6;
+            grid-row: 2/7;
             border-radius: 1rem;
         }
       
@@ -57,12 +65,16 @@
             grid-column: 2/9;
             grid-row: 2/7;
             border-radius: 1rem;
-        }
-      
+        } 
+
+  
     </style>
     </head>
     
     <body>
+    
+ 
+
         <div class="wrapper">
 
             <!-- top 4 cards -->
@@ -83,7 +95,7 @@
     
 </div>
 
-   <!-- side alternative card -->
+   <!-- side card -->
             <div class="four">ALTERNATIVE LOCATIONS
                 <br><br>
                 Grainger Library currently has a high occupancy try these locations instead
@@ -117,15 +129,15 @@
                     <br> <br>
                     <hr>
                      
-                      <h1> Art and Design Building </h1> 
+                      <!-- <h1> Art and Design Building </h1> 
                       Occupancy &nbsp; &nbsp;   40%
-                      <br> <br>
+                      <br> <br> -->
                     
             </div>
 
 
             
-   <!-- bottom 2 graph cards -->
+   <!-- bottom graph card -->
         
             <div class="six">OCCUPANCY FORECAST | # of People by Time | 2:02 PM | Wednesday, June 26, 2024</div>
 
